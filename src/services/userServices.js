@@ -26,16 +26,7 @@ async function signin({ email, password }) {
   return token;
 }
 
-async function createDoctor({ CRM, specialty, location, user_id }) {
-  const { rowCount } = await userRepositories.findDoctorById(user_id);
-  if (rowCount) throw new Error("Doctor already exists");
-
-  await userRepositories.createDoctor({ CRM, specialty, location, user_id });
-
-}
-
 export default {
   create,
-  signin,
-  createDoctor
+  signin
 };

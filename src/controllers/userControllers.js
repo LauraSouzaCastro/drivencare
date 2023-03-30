@@ -20,19 +20,7 @@ async function signin(req, res) {
     }
 }
 
-async function createDoctor(req, res) {
-    const { CRM, specialty, location } = req.body;
-    try {
-        const user = res.locals.user;
-        await userServices.createDoctor({ CRM, specialty, location, user_id: user.id });
-        return res.sendStatus(201);
-    } catch (err) {
-        return res.status(500).send(err.message);
-    }
-}
-
 export default {
     create,
-    signin,
-    createDoctor
+    signin
 };

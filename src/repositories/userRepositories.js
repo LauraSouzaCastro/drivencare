@@ -47,30 +47,10 @@ async function findById(id) {
     );
 }
 
-async function findDoctorById(user_id) {
-    return await connectionDb.query(
-    `    
-        SELECT * FROM doctors WHERE user_id=$1
-    `,
-        [user_id]
-    );
-}
-
-async function createDoctor({ CRM, specialty, location, user_id }) {
-    await connectionDb.query(
-    `
-        INSERT INTO doctors ( "CRM", specialty, location, user_id )
-        VALUES ($1, $2, $3, $4)
-    `,
-        [CRM, specialty, location, user_id]
-    );
-}
 export default {
     findByEmail,
     create,
     createSession,
     findById,
     findSessionByToken,
-    findDoctorById,
-    createDoctor
 };
