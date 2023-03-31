@@ -52,7 +52,7 @@ async function findDoctor() {
 async function findDates(doctor_id) {
     return await connectionDb.query(
     `    
-        SELECT id as date_id, horary FROM horaries WHERE doctor_id = $1 AND available = true
+        SELECT id as horary_id, horary FROM horaries WHERE doctor_id = $1 AND available = true
     `,
         [doctor_id]
     );
