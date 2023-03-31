@@ -19,10 +19,20 @@ async function create({ CRM, specialty, location, user_id }) {
     );
 }
 
+async function createHorary({ doctor_id,  horary}) {
+    await connectionDb.query(
+    `
+        INSERT INTO horaries ( doctor_id, horary )
+        VALUES ($1, $2)
+    `,
+        [doctor_id, horary]
+    );
+}
+
 async function findDoctorByQueryString({ name, specialty, location }) {
     return await connectionDb.query(
     `    
-        SELECT users.name, doctors."CRM", doctors.specialty, doctors.location 
+        SELECT doctors.id as doctor_id, users.name, doctors."CRM", doctors.specialty, doctors.location 
         FROM doctors
         JOIN users ON users.id = doctors.user_id
         WHERE users.name = $1 OR doctors.specialty = $2 OR doctors.location = $3
@@ -34,15 +44,24 @@ async function findDoctorByQueryString({ name, specialty, location }) {
 async function findDoctor() {
     return await connectionDb.query(
     `    
-        SELECT users.name, doctors."CRM", doctors.specialty, doctors.location 
+        SELECT doctors.id as doctor_id, users.name, doctors."CRM", doctors.specialty, doctors.location 
         FROM doctors
         JOIN users ON users.id = doctors.user_id
     `);
 }
-
+async function findDates(doctor_id) {
+    return await connectionDb.query(
+    `    
+        SELECT id as date_id, horary FROM horaries WHERE doctor_id = $1 AND available = true
+    `,
+        [doctor_id]
+    );
+}
 export default {
     create,
     findDoctorByUserId,
     findDoctor,
-    findDoctorByQueryString
+    findDoctorByQueryString,
+    createHorary,
+    findDates
 };

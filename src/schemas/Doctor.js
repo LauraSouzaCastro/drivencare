@@ -5,3 +5,7 @@ export const doctorSchemma = joi.object({
     specialty: joi.string().required(),
     location: joi.string().required()
 });
+
+export const horariesSchemma = joi.object({
+    horary: joi.date().required()
+});

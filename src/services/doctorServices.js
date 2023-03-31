@@ -7,7 +7,14 @@ async function create({ CRM, specialty, location, user_id }) {
     await doctorRepositories.create({ CRM, specialty, location, user_id });
 
 }
+async function createHorary({ horary, user_id }) {
+    const { rowCount, rows: [doctor] } = await doctorRepositories.findDoctorByUserId(user_id);
 
+    if (!rowCount) throw new Error("Doctor not exists");
+
+    await doctorRepositories.createHorary({ doctor_id: doctor.id, horary });
+
+}
 async function findDoctor({ name, specialty, location }) {
     let doctors;
     if(name || specialty || location ){
@@ -20,7 +27,13 @@ async function findDoctor({ name, specialty, location }) {
     
     return doctors
 }
+async function findDates(doctor_id) {
+    const { rows } =  await doctorRepositories.findDates(doctor_id);
+    return rows;
+}
 export default {
     create,
-    findDoctor
+    findDoctor,
+    createHorary,
+    findDates
 };
