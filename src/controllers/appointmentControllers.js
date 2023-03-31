@@ -12,18 +12,24 @@ async function create(req, res) {
     }
 }
 async function findAppointmentsUsers(req, res) {
+    let finished = req.query.finished;
+    if(!finished) finished = false;
+    
     try {
         const user = res.locals.user;
-        const appointments = await appointmentServices.findAppointmentsUsers(user.id);
+        const appointments = await appointmentServices.findAppointmentsUsers(user.id, finished);
         return res.send(appointments);
     } catch (err) {
         return res.status(500).send(err.message);
     }
 }
 async function findAppointmentsDoctors(req, res) {
+    let finished = req.query.finished;
+    if(!finished) finished = false;
+
     try {
         const user = res.locals.user;
-        const appointments = await appointmentServices.findAppointmentsDoctors(user.id);
+        const appointments = await appointmentServices.findAppointmentsDoctors(user.id, finished);
         return res.send(appointments);
     } catch (err) {
         return res.status(500).send(err.message);
