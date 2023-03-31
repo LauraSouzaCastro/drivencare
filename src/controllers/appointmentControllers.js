@@ -11,7 +11,16 @@ async function create(req, res) {
         return res.status(500).send(err.message);
     }
 }
-
+async function findAppointments(req, res) {
+    try {
+        const user = res.locals.user;
+        const appointments = await appointmentServices.findAppointments(user.id);
+        return res.send(appointments);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+}
 export default {
-    create
+    create,
+    findAppointments
 };

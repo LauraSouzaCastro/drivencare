@@ -7,7 +7,11 @@ async function create({ user_id, horary_id }) {
     await appointmentRepositories.create({ user_id, horary_id });
 
 }
-
+async function findAppointments(user_id) {
+    const { rows } =  await appointmentRepositories.findAppointments(user_id);
+    return rows;
+}
 export default {
-    create
+    create,
+    findAppointments
 };
