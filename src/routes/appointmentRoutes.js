@@ -8,6 +8,7 @@ const appointmentRoutes = Router();
 
 appointmentRoutes.use(authMiddleware.authValidation)
 appointmentRoutes.post('/', validateSchema(appointmentSchemma), appointmentControllers.create)
-appointmentRoutes.get('/', appointmentControllers.findAppointments)
+appointmentRoutes.get('/users', appointmentControllers.findAppointmentsUsers)
+appointmentRoutes.get('/doctors', appointmentControllers.findAppointmentsDoctors)
 
 export default appointmentRoutes;

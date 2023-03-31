@@ -24,7 +24,7 @@ async function create({ user_id, horary_id }) {
         [horary_id]
     );
 }
-async function findAppointments(user_id) {
+async function findAppointmentsUsers(user_id) {
     return await connectionDb.query(
     `    
         SELECT horaries.horary, users.name as doctor, doctors.specialty
@@ -37,8 +37,22 @@ async function findAppointments(user_id) {
         [user_id]
     );
 }
+async function findAppointmentsDoctors(user_id) {
+    return await connectionDb.query(
+    `    
+        SELECT horaries.horary, users.name as patient, doctors.specialty
+        FROM appointments 
+        JOIN horaries ON horaries.id = appointments.doctor_horary_id
+        JOIN doctors ON horaries.doctor_id = doctors.id
+        JOIN users ON appointments.user_id = users.id
+        WHERE horaries.doctor_id = $1
+    `,
+        [user_id]
+    );
+}
 export default {
     create,
     findDateByHoraryId,
-    findAppointments
+    findAppointmentsUsers,
+    findAppointmentsDoctors
 };
