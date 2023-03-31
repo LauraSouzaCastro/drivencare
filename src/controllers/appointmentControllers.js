@@ -29,8 +29,30 @@ async function findAppointmentsDoctors(req, res) {
         return res.status(500).send(err.message);
     }
 }
+async function putAppointmentsDoctors(req, res) {
+    const { appointment_id } = req.params;
+    try {
+        const user = res.locals.user;
+        await appointmentServices.putAppointmentsDoctors({ user_id: user.id, appointment_id });
+        return res.sendStatus(204);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+}
+async function deleteAppointmentsDoctors(req, res) {
+    const { appointment_id } = req.params;
+    try {
+        const user = res.locals.user;
+        await appointmentServices.deleteAppointmentsDoctors({ user_id: user.id, appointment_id });
+        return res.sendStatus(204);
+    } catch (err) {
+        return res.status(500).send(err.message);
+    }
+}
 export default {
     create,
     findAppointmentsUsers,
-    findAppointmentsDoctors
+    findAppointmentsDoctors,
+    putAppointmentsDoctors,
+    deleteAppointmentsDoctors
 };

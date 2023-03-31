@@ -2,7 +2,7 @@ import connectionDb from "../config/database.js";
 
 async function findDateByHoraryId(horary_id) {
     return await connectionDb.query(
-        `    
+    `    
         SELECT * FROM horaries WHERE id = $1 AND available = true
     `,
         [horary_id]
@@ -11,12 +11,12 @@ async function findDateByHoraryId(horary_id) {
 
 async function create({ user_id, horary_id }) {
     await connectionDb.query(
-        `
-            INSERT INTO appointments ( user_id,  doctor_horary_id )
-            VALUES ($1, $2)
-        `,
-            [user_id, horary_id]
-        );
+    `
+        INSERT INTO appointments ( user_id,  doctor_horary_id )
+        VALUES ($1, $2)
+    `,
+        [user_id, horary_id]
+    );
     await connectionDb.query(
     `
         UPDATE horaries SET "available" = false WHERE id = $1;
@@ -27,7 +27,7 @@ async function create({ user_id, horary_id }) {
 async function findAppointmentsUsers(user_id) {
     return await connectionDb.query(
     `    
-        SELECT horaries.horary, users.name as doctor, doctors.specialty
+        SELECT appointments.id as appointment_id, horaries.horary, users.name as doctor, doctors.specialty
         FROM appointments 
         JOIN horaries ON horaries.id = appointments.doctor_horary_id
         JOIN doctors ON horaries.doctor_id = doctors.id
@@ -40,7 +40,7 @@ async function findAppointmentsUsers(user_id) {
 async function findAppointmentsDoctors(user_id) {
     return await connectionDb.query(
     `    
-        SELECT horaries.horary, users.name as patient, doctors.specialty
+        SELECT appointments.id as appointment_id, horaries.horary, users.name as patient, doctors.specialty
         FROM appointments 
         JOIN horaries ON horaries.id = appointments.doctor_horary_id
         JOIN doctors ON horaries.doctor_id = doctors.id
@@ -50,9 +50,47 @@ async function findAppointmentsDoctors(user_id) {
         [user_id]
     );
 }
+async function findAppointmentsDoctorsById(appointment_id) {
+    return await connectionDb.query(
+    `    
+        SELECT users.id as doctor_id, appointments.held, horaries.id as horary_id
+        FROM appointments 
+        JOIN horaries ON horaries.id = appointments.doctor_horary_id
+        JOIN doctors ON horaries.doctor_id = doctors.id
+        JOIN users ON doctors.user_id = users.id
+        WHERE appointments.id = $1
+    `,
+        [appointment_id]
+    );
+}
+async function putAppointmentsDoctors(appointment_id) {
+    await connectionDb.query(
+    `
+        UPDATE appointments SET "held" = true WHERE id = $1;
+    `,
+        [appointment_id]
+    );
+}
+async function deleteAppointmentsDoctors(appointment_id, horary_id) {
+    await connectionDb.query(
+    `
+        UPDATE horaries SET "available" = true WHERE id = $1;
+    `,
+        [horary_id]
+    );
+    await connectionDb.query(
+    `
+        delete from appointments WHERE id = $1;
+    `,
+        [appointment_id]
+    );
+}
 export default {
     create,
     findDateByHoraryId,
     findAppointmentsUsers,
-    findAppointmentsDoctors
+    findAppointmentsDoctors,
+    findAppointmentsDoctorsById,
+    putAppointmentsDoctors,
+    deleteAppointmentsDoctors
 };
