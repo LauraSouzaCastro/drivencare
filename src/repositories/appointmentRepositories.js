@@ -45,7 +45,7 @@ async function findAppointmentsDoctors(user_id, finished) {
         JOIN horaries ON horaries.id = appointments.doctor_horary_id
         JOIN doctors ON horaries.doctor_id = doctors.id
         JOIN users ON appointments.user_id = users.id
-        WHERE horaries.doctor_id = $1 AND finished = $2
+        WHERE doctors.user_id = $1 AND finished = $2
     `,
         [user_id, finished]
     );

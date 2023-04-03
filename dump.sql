@@ -58,7 +58,7 @@ ALTER SEQUENCE public.consultations_id_seq OWNED BY public.appointments.id;
 
 CREATE TABLE public.doctors (
     id integer NOT NULL,
-    "CRM" text NOT NULL,
+    crm text NOT NULL,
     specialty text NOT NULL,
     location text NOT NULL,
     user_id integer NOT NULL
@@ -118,37 +118,6 @@ ALTER SEQUENCE public.horaries_id_seq OWNED BY public.horaries.id;
 
 
 --
--- Name: sessions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sessions (
-    id integer NOT NULL,
-    token text NOT NULL,
-    user_id integer NOT NULL
-);
-
-
---
--- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.sessions_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
-
-
---
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -156,7 +125,8 @@ CREATE TABLE public.users (
     id integer NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
-    password text NOT NULL
+    password text NOT NULL,
+    cpf text NOT NULL
 );
 
 
@@ -202,13 +172,6 @@ ALTER TABLE ONLY public.horaries ALTER COLUMN id SET DEFAULT nextval('public.hor
 
 
 --
--- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
-
-
---
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -219,36 +182,31 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: appointments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.appointments VALUES (4, 1, 2, true);
+INSERT INTO public.appointments VALUES (1, 3, 2, true);
+INSERT INTO public.appointments VALUES (4, 3, 1, false);
 
 
 --
 -- Data for Name: doctors; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.doctors VALUES (1, '12345', 'pediatra', 'Trindade', 1);
+INSERT INTO public.doctors VALUES (1, '123456', 'ginecologista', 'Trindade', 2);
 
 
 --
 -- Data for Name: horaries; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.horaries VALUES (2, 1, '2023-04-03 08:00:00', false);
-
-
---
--- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
---
-
-INSERT INTO public.sessions VALUES (1, 'b4c3acb4-f25e-4779-a4b7-9ea0fe6446d0', 1);
-INSERT INTO public.sessions VALUES (2, '170f2b47-d397-4be7-bd12-f1ace26f613b', 1);
+INSERT INTO public.horaries VALUES (2, 1, '2023-04-03 09:00:00', false);
+INSERT INTO public.horaries VALUES (1, 1, '2023-04-03 08:00:00', false);
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.users VALUES (1, 'laura', 'laura@gmail.com', '$2b$10$d6Pty.jgmwo0zdFBXSViSO.lCs5Wj/s8sd7Vlf6tW9szG66cXNDQa');
+INSERT INTO public.users VALUES (2, 'teste', 'teste@gmail.com', '$2b$10$zHn2ccQ.ilPHvQI9NtkJQeehoz/LLIj6cUP4QMzsDZZ8dmi/MzUKe', '12345678999');
+INSERT INTO public.users VALUES (3, 'laura', 'laura@gmail.com', '$2b$10$7XP3sxiOyKR3v049wmAkAO2tpwh2PNRQ3WrOozWkKr7y67Kl9GK2C', '12345678888');
 
 
 --
@@ -273,17 +231,10 @@ SELECT pg_catalog.setval('public.horaries_id_seq', 2, true);
 
 
 --
--- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.sessions_id_seq', 2, true);
-
-
---
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
 
 
 --
@@ -303,11 +254,11 @@ ALTER TABLE ONLY public.appointments
 
 
 --
--- Name: doctors doctors_CRM_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: doctors doctors_crm_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.doctors
-    ADD CONSTRAINT "doctors_CRM_key" UNIQUE ("CRM");
+    ADD CONSTRAINT doctors_crm_key UNIQUE (crm);
 
 
 --
@@ -319,14 +270,6 @@ ALTER TABLE ONLY public.doctors
 
 
 --
--- Name: horaries horaries_horary_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.horaries
-    ADD CONSTRAINT horaries_horary_key UNIQUE (horary);
-
-
---
 -- Name: horaries horaries_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -335,19 +278,11 @@ ALTER TABLE ONLY public.horaries
 
 
 --
--- Name: sessions sessions_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_cpf_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_pk PRIMARY KEY (id);
-
-
---
--- Name: sessions sessions_token_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_token_key UNIQUE (token);
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_cpf_key UNIQUE (cpf);
 
 
 --
@@ -396,14 +331,6 @@ ALTER TABLE ONLY public.doctors
 
 ALTER TABLE ONLY public.horaries
     ADD CONSTRAINT horaries_fk0 FOREIGN KEY (doctor_id) REFERENCES public.doctors(id);
-
-
---
--- Name: sessions sessions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_fk0 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

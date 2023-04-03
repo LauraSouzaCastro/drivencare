@@ -1,16 +1,17 @@
+import errors from "../errors/index.js";
 import doctorRepositories from "../repositories/doctorRepositories.js";
 
-async function create({ CRM, specialty, location, user_id }) {
+async function create({ crm, specialty, location, user_id }) {
     const { rowCount } = await doctorRepositories.findDoctorByUserId(user_id);
-    if (rowCount) throw new Error("Doctor already exists");
+    if (rowCount) throw errors.doctorExistsError(); 
 
-    await doctorRepositories.create({ CRM, specialty, location, user_id });
+    await doctorRepositories.create({ crm, specialty, location, user_id });
 
 }
 async function createHorary({ horary, user_id }) {
     const { rowCount, rows: [doctor] } = await doctorRepositories.findDoctorByUserId(user_id);
-
-    if (!rowCount) throw new Error("Doctor not exists");
+    
+    if (!rowCount) throw errors.doctorNotExistsError();
 
     await doctorRepositories.createHorary({ doctor_id: doctor.id, horary });
 

@@ -9,32 +9,13 @@ async function findByEmail(email) {
     );
 }
 
-async function create({ name, email, password }) {
+async function create({ name, email, password, cpf }) {
     await connectionDb.query(
     `
-        INSERT INTO users (name, email, password)
-        VALUES ($1, $2, $3)
+        INSERT INTO users (name, email, password, cpf)
+        VALUES ($1, $2, $3, $4)
     `,
-        [name, email, password]
-    );
-}
-
-async function createSession({ token, user_id }) {
-    await connectionDb.query(
-    `
-        INSERT INTO sessions (token, user_id)
-        VALUES ($1, $2)
-    `,
-        [token, user_id]
-    );
-}
-
-async function findSessionByToken(token) {
-    return await connectionDb.query(
-    `
-        SELECT * FROM sessions WHERE token = $1
-    `,
-        [token]
+        [name, email, password, cpf]
     );
 }
 
@@ -50,7 +31,5 @@ async function findById(id) {
 export default {
     findByEmail,
     create,
-    createSession,
-    findById,
-    findSessionByToken,
+    findById
 };

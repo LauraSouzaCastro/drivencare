@@ -1,17 +1,17 @@
 import doctorServices from "../services/doctorServices.js";
 
-async function create(req, res) {
+async function create(req, res, next) {
 
-    const { CRM, specialty, location } = req.body;
+    const { crm, specialty, location } = req.body;
     try {
         const user = res.locals.user;
-        await doctorServices.create({ CRM, specialty, location, user_id: user.id });
+        await doctorServices.create({ crm, specialty, location, user_id: user.id });
         return res.sendStatus(201);
     } catch (err) {
-        return res.status(500).send(err.message);
+        next(err);
     }
 }
-async function createHoraries(req, res) {
+async function createHoraries(req, res, next) {
 
     const { horary } = req.body;
     try {
@@ -19,10 +19,10 @@ async function createHoraries(req, res) {
         await doctorServices.createHorary({ horary, user_id: user.id });
         return res.sendStatus(201);
     } catch (err) {
-        return res.status(500).send(err.message);
+        next(err);
     }
 }
-async function findDoctors(req, res) {
+async function findDoctors(req, res, next) {
     const name = req.query.name;
     const specialty = req.query.specialty;
 	const location = req.query.location;
@@ -31,17 +31,17 @@ async function findDoctors(req, res) {
         const doctors = await doctorServices.findDoctor({ name, specialty, location });
         return res.send(doctors);
     } catch (err) {
-        return res.status(500).send(err.message);
+        next(err);
     }
 }
-async function findDates(req, res) {
+async function findDates(req, res, next) {
     const { doctor_id } = req.params;
 
     try {
         const dates = await doctorServices.findDates(Number(doctor_id));
         return res.send(dates);
     } catch (err) {
-        return res.status(500).send(err.message);
+        next(err);
     }
 }
 export default {

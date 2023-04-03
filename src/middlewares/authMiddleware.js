@@ -1,27 +1,34 @@
+import errors from "../errors/index.js";
 import userRepositories from "../repositories/userRepositories.js";
+import jwt from "jsonwebtoken";
 
 async function authValidation(req, res, next) {
-    const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "");
+  const { authorization } = req.headers;
+  if (!authorization) throw errors.unauthorizedError();
 
-    if (!token) return res.status(401).send("No token");
+  const parts = authorization.split(" ");
+  if (parts.length !== 2) throw errors.unauthorizedError();
 
+  const [schema, token] = parts;
+  if (schema !== "Bearer") throw errors.unauthorizedError();
+
+  jwt.verify(token, process.env.SECRET_JWT, async (error, decoded) => {
     try {
-        const {
-            rows: [session],
-        } = await userRepositories.findSessionByToken(token);
-        if (!session) return res.status(401).send("Session not found");
+      if (error) throw errors.unauthorizedError();
 
-        const {
-            rows: [user],
-        } = await userRepositories.findById(session.user_id);
-        if (!user) return res.status(401).send("User not found");
+      const {
+        rows: [user],
+      } = await userRepositories.findById(decoded.userId);
 
-        res.locals.user = user;
-        next();
+      if (!user) throw errors.unauthorizedError();
+
+      res.locals.user = user;
+
+      next();
     } catch (err) {
-        res.status(500).send(err.message);
+      next(err);
     }
+  });
 }
 
 export default { authValidation };
